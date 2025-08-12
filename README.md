@@ -66,7 +66,7 @@ const tune = require('tune-sdk')
 const basics = require('tune-basic-toolset')
 
 const ctx = tune.makeContext(
-    basics({ path: './tools', expose: ["rf", "wf"] })
+    basics({ expose: ["rf", "wf"], mount: "tools" })
 )
 ```
 
@@ -388,7 +388,7 @@ with argument it sets
 ```json
 "response_format": { 
     "type": "json_schema", 
-    "json_schema": { "schema": <contents of the referenced schema file> }
+    "json_schema": { "schema": "<contents of the referenced schema file>" }
 } 
 ```
 
