@@ -1,0 +1,35 @@
+{
+  "name": "tune-basic-toolset",
+  "version": "0.1.0",
+  "description": "Basic toolset for tune",
+  "main": "src/index.js",
+  "files": [
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "ai",
+    "chat",
+    "tools",
+    "tune"
+  ],
+  "author": "Ilya Ovdin <iovdin@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iovdin/tune-basic-toolset"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "tune-sdk": "latest",
+    "tune-fs": "latest"
+  },
+  "devDependencies": {
+    "tune-sdk": "latest",
+    "tune-fs": "latest"
+  },
+  "dependencies": {
+    "escodegen": "^2.1.0",
+    "esprima": "^4.0.1"
+  }
+}
