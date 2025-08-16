@@ -8,9 +8,10 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
 - [Tools](#tools)
   - [rf](#rf) read file
   - [wf](#wf) write file
-  - [patch](#patch) patch file
-  - [append](#append) append to file
+  - [patch](#patch) patch file  - [append](#append) append to file
   - [sh](#sh) execute shell command
+  - [cmd](#cmd) execute Windows cmd command
+  - [powershell](#powershell) execute PowerShell command
   - [osa](#osa) manage reminders/notes/calendar (AppleScript/macOS)
   - [jina_r](#jina_r) fetch webpage content
   - [turn](#turn) turn based agent
@@ -31,6 +32,7 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [head](#head) take first N lines of a file
   - [tail](#tail) take last N lines of a file or LLM payload
   - [slice](#slice) take lines from <start> to <finish> of a file
+  - [random](#random) random selection, sampling, shuffling, uniform ranges
 
 
 ## Setup
@@ -133,6 +135,40 @@ tool_result:
 ./README.md:  const text = "s: \@echo\nu: hello world";
 ./tools/echo.txt:you are echo, you print everything back
 ./tools/README.md:* `echo.txt` - to debug variable expansions and context
+```
+
+### `cmd`
+Execute Windows cmd command
+```chat
+user: @cmd
+list all files in current directory
+tool_call: cmd
+dir
+tool_result: 
+ Volume in drive C has no label.
+ Volume Serial Number is 1234-5678
+
+ Directory of C:\project
+
+12/01/2023  10:30 AM    <DIR>          .
+12/01/2023  10:30 AM    <DIR>          ..
+12/01/2023  09:15 AM             1,024 package.json
+12/01/2023  09:20 AM    <DIR>          src
+               1 File(s)          1,024 bytes
+               3 Dir(s)  15,728,640 bytes free
+```
+
+### `powershell`
+Execute PowerShell command
+```chat
+user: @powershell
+get system information
+tool_call: powershell
+Get-ComputerInfo | Select-Object WindowsProductName, TotalPhysicalMemory, CsProcessors
+tool_result: 
+WindowsProductName  : Windows 11 Pro
+TotalPhysicalMemory : 17179869184
+CsProcessors        : {Intel(R) Core(TM) i7-10700K CPU @ 3.80GHz}
 ```
 
 ### `osa`
@@ -515,3 +551,32 @@ user:
 @{ filename.txt | slice -20 }       # last 20 lines
 @{ filename.txt | slice 1 20 }      # first 20 lines (like head 20)
 ```
+
+### `random`
+Random selection, sampling, shuffling, and uniform number generation.
+
+Use cases:
+```chat
+user:
+@{| random a b c d }
+@{| random choice a b c d }
+@{| random "choice 1" "choice 2" }
+@{| random choice @path/to/file.txt }  # choose 1 line from a file
+@{| random choice 2..30 }              # choose 1 from range 
+@{| random choice -2.5..7.5 }          # floats
+@{| random choices 3 a b c d }         # pick 3 with replacment
+@{| random choices 5 @file.txt }       # pick 5 lines from file.txt
+@{| random sample 3 a b c d }          # pick 3 without replacement
+@{| random sample 10 1..5 }            # will return 5 unique numbers
+@{| random shuffle a b c d }
+@{| random shuffle 1..10 }
+@{| random uniform 1..10 }           # integers
+@{| random uniform -2.5..7.5 }       # floats
+@{| random uniform 10 20 }           # two-number form
+
+Notes:
+- Quotes are respected for tokens with spaces.
+- Files referenced as @file are expanded to non-empty trimmed lines.
+- Integer ranges like a..b can be mixed with discrete values and files; float ranges cannot be mixed in lists.
+- sample and shuffle require a discrete set; float ranges are not supported there.
+- choices and sample output multiple lines (one item per line).

@@ -1,4 +1,4 @@
-  {
+{
   "description": "Execute a shell command",
   "parameters": {
     "type": "object",
