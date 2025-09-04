@@ -8,7 +8,8 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
 - [Tools](#tools)
   - [rf](#rf) read file
   - [wf](#wf) write file
-  - [patch](#patch) patch file  - [append](#append) append to file
+  - [patch](#patch) patch file  
+  - [append](#append) append to file
   - [sh](#sh) execute shell command
   - [cmd](#cmd) execute Windows cmd command
   - [powershell](#powershell) execute PowerShell command
@@ -574,6 +575,7 @@ user:
 @{| random uniform -2.5..7.5 }       # floats
 @{| random uniform 10 20 }           # two-number form
 
+comment:
 Notes:
 - Quotes are respected for tokens with spaces.
 - Files referenced as @file are expanded to non-empty trimmed lines.
