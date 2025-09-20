@@ -34,6 +34,7 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [tail](#tail) take last N lines of a file or LLM payload
   - [slice](#slice) take lines from <start> to <finish> of a file
   - [random](#random) random selection, sampling, shuffling, uniform ranges
+  - [curry](#curry) change a tool by setting a parameter
 
 
 ## Setup
@@ -386,6 +387,10 @@ pipe filename content to shell command
 @{ a.log | shp tail }
 
 @{ a.log | shp grep pattern }
+
+print screen of one of tmux session
+@{| shp tmux capture-pane -t 0 -p }
+
 ```
 
 ### `init` 
@@ -575,10 +580,46 @@ user:
 @{| random uniform -2.5..7.5 }       # floats
 @{| random uniform 10 20 }           # two-number form
 
-comment:
+```
 Notes:
 - Quotes are respected for tokens with spaces.
 - Files referenced as @file are expanded to non-empty trimmed lines.
 - Integer ranges like a..b can be mixed with discrete values and files; float ranges cannot be mixed in lists.
 - sample and shuffle require a discrete set; float ranges are not supported there.
 - choices and sample output multiple lines (one item per line).
+
+
+### `curry`
+Modify a tool by setting parameter or name or description. 
+Narrow possible usage of a tool so that LLM wont mess up
+
+```chat
+user:
+@{ sh | curry text=ls $name=ls_cwd}
+
+what is in my current directory?
+
+assistant:
+
+tool_call: ls_cwd
+tool_result:
+node_modules
+package.json
+README.md
+src
+
+
+user:
+@{ sqlite | curry filename=db.sqlite format=table}
+
+what tables are outhere?
+
+user: 
+@{ list | curry filename=mylist.todo $name=todo }
+
+create sample todo list
+tool_call: todo
+[] - Create sample todo list
+tool_result:
+list updated
+```
