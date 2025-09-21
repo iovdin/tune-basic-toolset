@@ -16,5 +16,8 @@ module.exports = async function readFile({ filename, linenum }, ctx) {
   if (pathArr.length > 1) {
     return`@{ ${pathArr.join(" | ")} }`;
   }
+  if (relFile.match(/\s+/)) {
+    return `@{${relFile}}`;
+  }
   return `@${relFile}`;
 };

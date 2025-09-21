@@ -6,5 +6,11 @@ module.exports = async function resolve(node, args, ctx) {
     throw Error(`can resolve only text nodes, got ${node.type}`)
   }
   const filename = await node.read()
-  return ctx.resolve(filename.trim())
+  const result = await ctx.resolve(filename.trim())
+  if (result) return result
+  
+  return {
+    type: "text",
+    read: async () => args || "Not found"
+  }
 }
