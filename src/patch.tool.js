@@ -17,7 +17,7 @@ module.exports = async function patch({ text, filename }, ctx) {
   }
 
   if (patches.length === 0) {
-    throw new Error("No valid patch segments found");
+    return "No valid patch segments found";
   }
 
   let fileContent = await ctx.read(filename);

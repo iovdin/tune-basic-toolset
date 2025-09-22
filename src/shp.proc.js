@@ -12,7 +12,7 @@ const shp = async (node, args, ctx) => ({
     let result;
     try {
       if (input !== null) {
-        const res = spawnSync(args.trim(), {
+        const res = spawnSync(args.trim() || "sh", {
           input,
           encoding: 'utf8',
           shell: true
