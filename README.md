@@ -17,10 +17,12 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [jina_r](#jina_r) fetch webpage content
   - [turn](#turn) turn based agent
   - [list](#list) keep list of tasks todo (loops for LLM)
+  - [sqlite](#sqlite) execute sqlite queries 
   - [py](#py) run python code
   - [js](#js) run javascript code
   - [message](#message) talk to another chat/agent
 - [Processors](#processors)
+  - [proc](#proc) converts tool to processor
   - [shp](#shp) include shell command output
   - [init](#init) set initial value
   - [json_format](#json_format) make LLM respond with JSON
@@ -284,6 +286,45 @@ tool_result:
 list updated
 ```
 
+### `sqlite`
+execut sqlite queries with sqlite shell
+
+```chat
+user:
+@sqlite
+
+create a simple todo table in db.sqlite and fill it with fake data
+assistant:
+
+tool_call: sqlite {"filename":"db.sqlite"}
+CREATE TABLE todo (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  task TEXT NOT NULL,
+  status TEXT CHECK(status IN ('pending', 'completed')) NOT NULL DEFAULT 'pending',
+  due_date DATE
+);
+
+INSERT INTO todo (task, status, due_date) VALUES
+('Buy groceries', 'pending', '2024-05-01'),
+('Finish project report', 'pending', '2024-05-03'),
+('Book flight tickets', 'completed', '2024-04-25'),
+('Call plumber', 'pending', '2024-04-30'),
+('Schedule meeting with team', 'completed', '2024-04-20');
+tool_result:
+
+user:
+check pending tasks
+
+assistant:
+
+tool_call: sqlite {"filename":"db.sqlite","format":"json"}
+SELECT * FROM todo WHERE status = 'pending';
+tool_result:
+[{"id":1,"task":"Buy groceries","status":"pending","due_date":"2024-05-01"},
+{"id":2,"task":"Finish project report","status":"pending","due_date":"2024-05-03"},
+{"id":4,"task":"Call plumber","status":"pending","due_date":"2024-04-30"}]
+```
+
 
 ### `py`
 execute python code
@@ -369,6 +410,20 @@ Because it had a root canal!
 
 ## Processors
 [Processors](https://iovdin.github.io/tune/template-language/processors) is a way to modify variable or insert new ones into chat.
+
+### `proc`
+converts any tool to a processor
+``` chat
+system:
+include project file list to system prompt
+@{| proc sh git ls-files }
+
+execute script with sqlite on db `db.sqlite` and insert result
+@{ script.sql | proc sqlite filename=db.sqlite }
+
+execut python script text="384 * 123" and insert back result
+@{| proc py 384 * 123  }
+```
 
 ### `shp`
 Insert shell command output
@@ -623,3 +678,4 @@ tool_call: todo
 tool_result:
 list updated
 ```
+

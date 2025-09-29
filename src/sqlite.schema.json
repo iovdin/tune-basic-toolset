@@ -1,0 +1,23 @@
+{
+  "description": "Execute SQLite multiple queries on a given database file",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "filename": {
+        "type": "string",
+        "description": "Path to the SQLite database file"
+      },
+      "text": {
+        "type": "string",
+        "description": "SQL queries to execute, 1 per line"
+      },
+      "format": {
+        "type": "string",
+        "description": "Output format for the query result",
+        "enum": ["line", "list", "csv", "html", "json", "table", "tabs"],
+        "default": "line"
+      }
+    },
+    "required": ["filename", "text"]
+  }
+}
