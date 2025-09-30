@@ -23,10 +23,11 @@ module.exports = async function patch({ text, filename }, ctx) {
   let fileContent = await ctx.read(filename);
 
   for (const { oldPart, newPart } of patches) {
-    // Escape regex special chars in oldPart, then allow flexible whitespace
-    const escaped = oldPart
-      .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-      .replace(/\s+/g, "\\s+");
+    // Escape regex special chars in oldPart.
+    // Do NOT relax all whitespace to \s+; that can swallow preceding newlines.
+    // Only normalize line endings so CRLF in patches can match LF in files.
+    let escaped = oldPart.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    escaped = escaped.replace(/\r?\n/g, "\\r?\\n");
     const oldRegex = new RegExp(escaped, "g");
 
     // Perform replacement using a function to avoid replacement string ambiguities

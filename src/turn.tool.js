@@ -1,5 +1,3 @@
-const fs = require("fs");
-
 module.exports = async function turn({ role, filename }, ctx) {
   if (filename) {
     await ctx.write(filename, `@@${role}`);
