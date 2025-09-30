@@ -9,7 +9,7 @@
       },
       "system": {
         "type": "string",
-        "description": "Filename that contains system prompt, required once at the beginning of simulation"
+        "description": "System prompt, to include file use @@path/to/file or @@file syntax"
       },
       "text": {
         "type": "string",

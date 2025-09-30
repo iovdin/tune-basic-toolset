@@ -15,12 +15,12 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [powershell](#powershell) execute PowerShell command
   - [osa](#osa) manage reminders/notes/calendar (AppleScript/macOS)
   - [jina_r](#jina_r) fetch webpage content
-  - [turn](#turn) turn based agent
   - [list](#list) keep list of tasks todo (loops for LLM)
   - [sqlite](#sqlite) execute sqlite queries 
   - [py](#py) run python code
   - [js](#js) run javascript code
-  - [message](#message) talk to another chat/agent
+  - [turn](#turn) handoff based agent (shared context)
+  - [message](#message) talk to another chat/agent (separate context)
 - [Processors](#processors)
   - [proc](#proc) converts tool to processor
   - [shp](#shp) include shell command output
@@ -220,39 +220,6 @@ Tune is a versatile toolkit designed for developers and users to effectively int
 ```
 
 
-### `turn`
-A way to switch roles when building multistep agents [read more](https://iovdin.github.io/tune/examples/multi-agent) 
-```chat
-system: @turn @gpt-4o
-You're playing 20 questions game.
-You switch turns between 'thinker' and 'player' agent. 
-Current agent stored in agent.txt file
-'player' always plays first
-
-@@agent|init
-assistant: 
-Is it a living thing?
-
-tool_call: turn {"role":"thinker","filename":"agent.txt"}
-tool_result: now it is turn of thinker to reply
-
-assistant: 
-No.
-
-tool_call: turn {"role":"player","filename":"agent.txt"}
-tool_result: now it is turn of player to reply
-
-assistant: 
-Is it something that can be used indoors?
-
-tool_call: turn {"role":"thinker","filename":"agent.txt"}
-tool_result: now it is turn of thinker to reply
-
-assistant: 
-Yes.
-
-...
-```
 
 ### `list`
 Keep list of tasks to do
@@ -353,6 +320,41 @@ tool_result:
 
 ```
 
+### `turn`
+A way to switch roles when building multistep agents [read more](https://iovdin.github.io/tune/examples/multi-agent) 
+```chat
+system:  @gpt-4o
+@{ turn | curry filename=agent.txt}
+You're playing 20 questions game.
+You switch turns between 'thinker' and 'player' agent. 
+'player' always plays first
+
+@@agent|init
+assistant: 
+Is it a living thing?
+
+tool_call: turn {"name": "thinker"}
+tool_result: 
+now it is turn of thinker to reply
+
+assistant: 
+No.
+
+tool_call: turn {"role":"player"}
+tool_result: now it is turn of player to reply
+
+assistant: 
+Is it something that can be used indoors?
+
+tool_call: turn {"role":"thinker"}
+tool_result: now it is turn of thinker to reply
+
+assistant: 
+Yes.
+
+...
+```
+
 ### `message`
 Talk to another chat/agent via tool call. 
 Orchestrate or evaulate other agents/chats.
@@ -362,19 +364,19 @@ system:
 Your goal is to talk to Groot at `groot.prompt` system prompt
 and try to make him say anything but 'I am Groot' 
 
-tool_call: message {"filename":"groot.chat","system":"groot.prompt"}
+tool_call: message {"filename":"groot.chat","system":"@@groot.prompt"}
 Hello Groot! How are you feeling today?
 
 tool_result: 
 I am Groot!
 
-tool_call: message {"filename":"groot.chat","system":"groot.prompt"}
+tool_call: message {"filename":"groot.chat"}
 What do you think about trees?
 
 tool_result: 
 I am Groot!
 
-tool_call: message {"filename":"groot.chat","system":"groot.prompt"}
+tool_call: message {"filename":"groot.chat"}
 Can you tell me a joke?
 
 tool_result: 

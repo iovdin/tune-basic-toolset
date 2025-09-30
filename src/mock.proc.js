@@ -1,4 +1,5 @@
 module.exports = async function mock(node, args, ctx) {
+  //TODO it is not resolved into sub prompts
   const re = /(?<name>\w+)\s*=/
   let lastName;
   let m;
