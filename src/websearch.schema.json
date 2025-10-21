@@ -1,0 +1,23 @@
+{
+  "description": "Does a websearch using llm",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "description": "web search query"
+      },
+      "model": {
+        "type": "string",
+        "enum": [
+          "perplexity/sonar", 
+          "perplexity/sonar-pro", 
+          "gpt-4o-search-preview", 
+          "gpt-4o-mini-search-preview"
+        ],
+        "description": "model to do websearch, default is perplexity/sonar"
+      }
+    },
+    "required": ["text"]
+  }
+}

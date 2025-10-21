@@ -1,0 +1,3 @@
+user:
+@{ model | init perplexity/sonar | resolve }
+@text

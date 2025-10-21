@@ -1,0 +1,19 @@
+a
+location ~ /\.
+{
+  deny all;
+}
+b
+-------------------------------
+<<<<<<< ORIGINAL
+location ~ /\.
+=======
+location ~ /\. {
+>>>>>>> UPDATED
+-------------------------------
+a
+location ~ /\. {
+{
+  deny all;
+}
+b

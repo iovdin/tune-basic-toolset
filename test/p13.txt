@@ -1,0 +1,47 @@
+location ~ ^/.well-known {
+    	rewrite ^/.well-known/(.*)$ /well-known/$1 permanent;
+   }
+   
+   location ~ /\. {
+     deny all;
+   }
+-------------------------------
+<<<<<<< ORIGINAL
+   location ~ ^/.well-known {
+    	rewrite ^/.well-known/(.*)$ /well-known/$1 permanent;
+   }
+   
+   location ~ /\.
+=======
+   location ~ ^/.well-known {
+    	rewrite ^/.well-known/(.*)$ /well-known/$1 permanent;
+   }
+
+   {% if peerby_config == 'dev' %}
+   # Webhook proxy for dev
+   location ~ ^/webhook_proxy/([^/]+)/?(.*)$ {
+     set $wh_domain $1;
+     set $wh_rest   $2;
+     proxy_pass https://$wh_domain/webhook/$wh_rest$is_args$args;
+   }
+   {% endif %}
+   
+   location ~ /\.
+>>>>>>> UPDATED
+-------------------------------
+   location ~ ^/.well-known {
+    	rewrite ^/.well-known/(.*)$ /well-known/$1 permanent;
+   }
+
+   {% if peerby_config == 'dev' %}
+   # Webhook proxy for dev
+   location ~ ^/webhook_proxy/([^/]+)/?(.*)$ {
+     set $wh_domain $1;
+     set $wh_rest   $2;
+     proxy_pass https://$wh_domain/webhook/$wh_rest$is_args$args;
+   }
+   {% endif %}
+   
+   location ~ /\. {
+     deny all;
+   }

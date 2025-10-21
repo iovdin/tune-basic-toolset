@@ -1,0 +1,25 @@
+{
+  "description": "filter lines with regex",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "description": "Text to be filtered"
+      },
+      "filename": {
+        "type": "string",
+        "description": "if text is not set, filename will be read and filtered"
+      },
+      "regex": {
+        "type": "string",
+        "description": "js regex to filter lines in file or text. passed as first arguments to new RegExp "
+      },
+      "regex_flags": {
+        "type": "string",
+        "description": "flags to be passed to new RegExp constructor"
+      }
+    },
+    "required": ["regex"]
+  }
+}

@@ -1,0 +1,19 @@
+x
+  (aif user.mangopayId
+    (a (href: (+ "https://dashboard.mangopay.com/User/" it "/Details") target:"_blank")
+      "Mangopay wallet"))
+y
+-------------------------------
+<<<<<<< ORIGINAL
+  (aif user.mangopayId
+    (a (href: (+ "https://dashboard.mangopay.com/User/" it "/Details") target:"_blank")
+      "Mangopay wallet"))
+=======
+  (aif user.mangopayId
+    (span "Mangopay: " it))
+>>>>>> UPDATED
+-------------------------------
+x
+  (aif user.mangopayId
+    (span "Mangopay: " it))
+y

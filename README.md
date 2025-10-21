@@ -13,8 +13,10 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [sh](#sh) execute shell command
   - [cmd](#cmd) execute Windows cmd command
   - [powershell](#powershell) execute PowerShell command
+  - [grep](#grep) search for patterns in text or files
   - [osa](#osa) manage reminders/notes/calendar (AppleScript/macOS)
   - [jina_r](#jina_r) fetch webpage content
+  - [websearch](#websearch) search the web with web-enabled llms
   - [list](#list) keep list of tasks todo (loops for LLM)
   - [sqlite](#sqlite) execute sqlite queries 
   - [py](#py) run python code
@@ -175,6 +177,22 @@ TotalPhysicalMemory : 17179869184
 CsProcessors        : {Intel(R) Core(TM) i7-10700K CPU @ 3.80GHz}
 ```
 
+### `grep`
+Search for patterns in text or files using regular expressions
+```chat
+user: @grep
+find all lines containing "TODO" in myfile.js
+tool_call: grep {"filename":"myfile.js","regex":"TODO"}
+tool_result: 
+// TODO: refactor this function
+// TODO: add error handling
+
+system: 
+TODOS:
+@{ myfile.js | proc grep regex=TODO }
+
+```
+
 ### `osa`
 AppleScript tool, manage reminders, notes, calendar etc on osx
 ```chat
@@ -219,7 +237,25 @@ Tune is a versatile toolkit designed for developers and users to effectively int
 <cut for brevity>
 ```
 
+### `websearch`
+Search the web with web enabled llms
+Supports search with  `perplexity/sonar`, `perplexity/sonar-pro`, `gpt-4o-search-preview`, `gpt-4o-mini-search-preview` models via the `model` parameter (defaults to `perplexity/sonar`).
 
+```chat
+user: @websearch
+latest ai news
+
+assistant:
+
+tool_call: websearch {"model":"perplexity/sonar"}
+latest AI news
+tool_result:
+The latest AI news in October 2025 highlights significant investments, new projects, policy developments, and advances across various sectors:
+
+- Major companies including Microsoft, Google, Nvidia, OpenAI, Salesforce, and CoreWeave have pledged over £31 billion in capital expenditure focused on AI data centers and infrastructure upgrades[1].
+```
+
+The websearch tool provides up-to-date information by querying the web through AI-powered search models. You can specify different Perplexity models like `perplexity/sonar-pro` for more advanced searches.
 
 ### `list`
 Keep list of tasks to do

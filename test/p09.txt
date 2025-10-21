@@ -1,0 +1,19 @@
+line1
+line2
+line3
+-------------------------------
+<<<<<<< ORIGINAL
+line2
+=======
+LINE2
+>>>>>> UPDATED
+
+<<<<<<< ORIGINAL
+line3
+=======
+LINE3
+>>>>>> UPDATED
+-------------------------------
+line1
+LINE2
+LINE3
