@@ -14,8 +14,6 @@ module.exports = async function proc(node, args, ctx) {
 
   const tool = await ctx.resolve(toolName, { "type": "tool" })
 
-  console.log(params)
-
   if (!tool || tool.type !== "tool") {
     throw Error(`tool '${toolName}' not found`)
   }
@@ -46,7 +44,7 @@ function parseCommandLine(input) {
   // 1) Parse leading alphanumeric command
   skipWS();
   const cmdStart = i;
-  while (i < len && /[A-Za-z0-9]/.test(s[i])) i++;
+  while (i < len && /[A-Za-z0-9_\-]/.test(s[i])) i++;
   const command = s.slice(cmdStart, i);
   if (!command) return [null, {}];
 

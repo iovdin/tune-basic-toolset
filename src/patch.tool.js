@@ -5,7 +5,9 @@ const fs = require('fs').promises;
 
 module.exports = async function patch({ text, filename }, ctx) {
   // Regex to match each patch block
-  const patchRegex = /<<<<<<< ORIGINAL[^\n]*\n([\s\S]*?)=======\n([\s\S]*?)>>>>>>> UPDATED[^\n]*(?:\n|$)/g;
+  // Be lenient about the number of conflict marker characters because some
+  // environments may trim one or more > or < characters.
+  const patchRegex = /<{6,}\s*ORIGINAL[^\n]*\n([\s\S]*?)=+\n([\s\S]*?)>{6,}\s*UPDATED[^\n]*(?:\n|$)/g;
   const patches = [];
   let match;
 
