@@ -12,6 +12,7 @@
         "enum": [
           "perplexity/sonar", 
           "perplexity/sonar-pro", 
+          "gpt-5-search-api",
           "gpt-4o-search-preview", 
           "gpt-4o-mini-search-preview"
         ],

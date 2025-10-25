@@ -16,6 +16,6 @@
         "description": "User message to send"
       }
     },
-    "required": ["filename", "text"]
+    "required": ["text"]
   }
 }

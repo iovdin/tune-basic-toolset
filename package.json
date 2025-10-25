@@ -1,6 +1,6 @@
 {
   "name": "tune-basic-toolset",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "Basic toolset for tune",
   "main": "src/index.js",
   "files": [
@@ -25,12 +25,12 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "tune-sdk": "latest",
-    "tune-fs": "latest"
+    "tune-fs": "latest",
+    "tune-sdk": "latest"
   },
   "devDependencies": {
-    "tune-sdk": "latest",
-    "tune-fs": "latest"
+    "tune-fs": "latest",
+    "tune-sdk": "latest"
   },
   "dependencies": {
     "escodegen": "^2.1.0",

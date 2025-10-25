@@ -1,5 +1,6 @@
 # Test directory
 test/
+.github
 
 # Python cache files
 __pycache__/
@@ -32,3 +33,4 @@ package-lock.json
 
 # Backup files
 *.backup
+test
