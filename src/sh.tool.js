@@ -29,5 +29,5 @@ module.exports = async function sh({ text }) {
       }
     }
   }
-  return (result || "").replaceAll("@", "\\@");
+  return (result || "")
 };

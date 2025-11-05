@@ -12,5 +12,5 @@ module.exports = async function powershell({ text }) {
   } catch (e) {
     result = e.stderr + e.stdout;
   }
-  return (result || "").replaceAll("@", "\\@");
+  return (result || "")
 };

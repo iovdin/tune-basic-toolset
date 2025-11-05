@@ -12,5 +12,5 @@ module.exports = async function grep({filename, text, regex, regex_flags}, ctx) 
   }
 
   const r = new RegExp(regex, regex_flags)
-  return text.split(/\r?\n/).filter(line => r.test(line)).join("\n").replaceAll("@", "\\@")
+  return text.split(/\r?\n/).filter(line => r.test(line)).join("\n")
 }

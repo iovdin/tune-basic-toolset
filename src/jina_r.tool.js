@@ -23,5 +23,5 @@ module.exports = async function fetchFromUrl({ url, filename, links }, ctx) {
     await ctx.write(filename, res);
     return `@${filename}`;
   }
-  return res.replace(/@/g, "\\@");
+  return res
 };

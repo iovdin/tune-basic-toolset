@@ -53,7 +53,7 @@ module.exports = async function execute({ text, inputType }, ctx) {
         input: modifiedCode, 
       });
 
-    return (res.stderr + res.stdout).trim().replace(/@/g, "\\@");
+    return (res.stderr + res.stdout).trim()
   } finally {
     unlinkSync(filename);
   }

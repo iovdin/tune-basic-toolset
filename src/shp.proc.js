@@ -24,7 +24,7 @@ const shp = async (node, args, ctx) => ({
     } catch (e) {
       result = e.stderr + e.stdout;
     }
-    return result.replaceAll('@', '\\@');
+    return result;
   }
 });
 

@@ -15,5 +15,5 @@ module.exports = async function sqlite({ filename, text, format = "table"}, ctx)
       result = e.stack
     }
   }
-  return (result || "").replaceAll("@", "\\@");
+  return (result || "");
 }
