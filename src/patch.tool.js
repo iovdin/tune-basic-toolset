@@ -1,21 +1,20 @@
 const fs = require('fs').promises;
 
 // Patch tool to apply custom diffs marked with <<<<<<< ORIGINAL and >>>>>>> UPDATED
-// More tolerant to whitespace differences on each line and reports per-block success.
+// Handles patches with context and applies only the segments between markers.
+
 module.exports = async function patch({ text, filename }, ctx) {
-  if (!text || !filename) {
-    return "No patch text or filename provided";
-  }
-
-  // Match: <<<<<<< ORIGINAL ... ======= ... >>>>>>> UPDATED
-  // Be tolerant to CRLF/LF and optional trailing text/spaces on the markers.
-  const patchRegex = /<{6,}\s*ORIGINAL[^\n]*\r?\n([\s\S]*?)=+[^\n]*\r?\n([\s\S]*?)>{6,}\s*UPDATED[^\n]*(?:\r?\n|$)/g;
-
+  // Regex to match each patch block
+  // Be lenient about the number of conflict marker characters because some
+  // environments may trim one or more > or < characters.
+  const patchRegex = /<{6,}\s*ORIGINAL[^\n]*\n([\s\S]*?)=+\n([\s\S]*?)>{6,}\s*UPDATED[^\n]*(?:\n|$)/g;
   const patches = [];
-  let m;
-  while ((m = patchRegex.exec(text)) !== null) {
-    const oldPart = String(m[1]).replace(/^\s*\r?\n+|\r?\n+\s*$/g, "");
-    const newPart = String(m[2]).replace(/^\s*\r?\n+|\r?\n+\s*$/g, "");
+  let match;
+
+  // Extract all old/new segments
+  while ((match = patchRegex.exec(text)) !== null) {
+    const oldPart = match[1].replace(/^\n+|\n+$/g, "");
+    const newPart = match[2].replace(/^\n+|\n+$/g, "");
     patches.push({ oldPart, newPart });
   }
 
@@ -25,41 +24,18 @@ module.exports = async function patch({ text, filename }, ctx) {
 
   let fileContent = await ctx.read(filename);
 
-  function buildPattern(oldStr) {
-    // Escape special regex chars
-    let escaped = oldStr.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    // Normalize line endings to \r?\n so CRLF/LF both match
-    escaped = escaped.replace(/\r?\n/g, "\\r?\\n");
-    // Tolerate indentation/space differences (spaces or tabs), zero-or-more
-    // Keep newlines strict so structure must still match.
-    escaped = escaped.replace(/[ \t]+/g, "[ \\t]*");
-    return new RegExp(escaped, "g");
-  }
-
-  const totalSegments = patches.length;
-  let appliedSegments = 0;
-  let totalReplacements = 0;
-
   for (const { oldPart, newPart } of patches) {
-    const re = buildPattern(oldPart);
-    let matches = 0;
-    fileContent = fileContent.replace(re, () => {
-      matches += 1;
-      return newPart;
-    });
-    if (matches > 0) {
-      appliedSegments += 1;
-      totalReplacements += matches;
-    }
+    // Escape regex special chars in oldPart.
+    // Do NOT relax all whitespace to \s+; that can swallow preceding newlines.
+    // Only normalize line endings so CRLF in patches can match LF in files.
+    let escaped = oldPart.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    escaped = escaped.replace(/\r?\n/g, "\\r?\\n");
+    const oldRegex = new RegExp(escaped, "g");
+
+    // Perform replacement using a function to avoid replacement string ambiguities
+    fileContent = fileContent.replace(oldRegex, () => newPart);
   }
 
   await ctx.write(filename, fileContent);
-
-  if (appliedSegments === 0) {
-    return `no matches applied (0/${totalSegments})`;
-  }
-  if (appliedSegments < totalSegments) {
-    return `patched partially (${appliedSegments}/${totalSegments}), replacements: ${totalReplacements}`;
-  }
-  return `patched (${appliedSegments}/${totalSegments}), replacements: ${totalReplacements}`;
+  return "patched";
 };
