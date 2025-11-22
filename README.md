@@ -10,7 +10,7 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [wf](#wf) write file
   - [patch](#patch) patch file  
   - [append](#append) append to file
-  - [sh](#sh) execute shell command
+  - [sh](#sh) execute shell command locally and remotely
   - [cmd](#cmd) execute Windows cmd command
   - [powershell](#powershell) execute PowerShell command
   - [grep](#grep) search for patterns in text or files
@@ -25,7 +25,6 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [message](#message) talk to another chat/agent (separate context)
 - [Processors](#processors)
   - [proc](#proc) converts tool to processor
-  - [shp](#shp) include shell command output
   - [init](#init) set initial value
   - [json_format](#json_format) make LLM respond with JSON
   - [log](#log) save LLM payload
@@ -130,7 +129,7 @@ appended
 ```
 
 ### `sh`
-Execute shell command
+Execute shell command locally or with ssh
 ```chat
 user: @sh
 find with ripgrep where echo is used
@@ -141,6 +140,15 @@ tool_result:
 ./README.md:  const text = "s: \@echo\nu: hello world";
 ./tools/echo.txt:you are echo, you print everything back
 ./tools/README.md:* `echo.txt` - to debug variable expansions and context
+
+user:
+check contents directory on root\@host.com
+assistant:
+tool_call: sh {"host": "root@host.com"}
+ls
+tool_result:
+file1
+file2
 ```
 
 ### `cmd`
@@ -461,29 +469,6 @@ execute script with sqlite on db `db.sqlite` and insert result
 
 execut python script text="384 * 123" and insert back result
 @{| proc py 384 * 123  }
-```
-
-### `shp`
-Insert shell command output
-```chat
-system:
-include project file list to system prompt
-@{| shp git ls-files }
-
-include buffer content on osx
-@{| shp pbpaste }
-
-include current date
-@{| shp date }
-
-pipe filename content to shell command
-@{ a.log | shp tail }
-
-@{ a.log | shp grep pattern }
-
-print screen of one of tmux session
-@{| shp tmux capture-pane -t 0 -p }
-
 ```
 
 ### `init` 

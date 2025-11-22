@@ -1,11 +1,23 @@
-const { execSync } = require('child_process');
+const { spawnSync, execSync } = require('child_process');
 
-module.exports = async function sh({ text }) {
+//TODO look back do not escape escaped
+const escape = (str) => str.replace(/'/g, "\\'")
+
+module.exports = async function sh({ text, host }) {
   let result = "";
   try {
+    let cmd = text
+    let args = []
+    if (host) {
+      cmd = "ssh"
+      args = [host, text]
+    }
     // Increase maxBuffer to reduce ERR_CHILD_PROCESS_STDIO_MAXBUFFER risk on large outputs
-    result = execSync(text, { encoding: "utf8", maxBuffer: 10 * 1024 * 1024 });
+    result = spawnSync(cmd, args, { encoding: "utf8", maxBuffer: 10 * 1024 * 1024, shell: true });
+    result = (result.stdout || "") + (result.stderr || "")
+    return result
   } catch (e) {
+    return e
     const stderr = e && typeof e.stderr !== "undefined" ? String(e.stderr || "") : "";
     const stdout = e && typeof e.stdout !== "undefined" ? String(e.stdout || "") : "";
 
