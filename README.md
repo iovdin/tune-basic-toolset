@@ -371,7 +371,8 @@ It is useful when you need to trigger loops and ifs or chain few tool calls toge
 ```chat
 user: 
 @js_ctx @sh
-1234 + 4311
+
+what is in my current directory?
 
 tool_call: sh
 ls
