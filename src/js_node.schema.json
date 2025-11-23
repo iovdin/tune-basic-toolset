@@ -1,5 +1,5 @@
  {
-  "description": "Execute a given JavaScript code snippet and return the result",
+  "description": "Execute a given JavaScript code snippet and return the result using new node process",
   "parameters": {
     "type": "object",
     "properties": {

@@ -20,7 +20,8 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [list](#list) keep list of tasks todo (loops for LLM)
   - [sqlite](#sqlite) execute sqlite queries 
   - [py](#py) run python code
-  - [js](#js) run javascript code
+  - [js_node](#js_node) run javascript code in node process
+  - [js_ctx](#js_ctx) run javascript code that shares context with LLM
   - [turn](#turn) handoff based agent (shared context)
   - [message](#message) talk to another chat/agent (separate context)
 - [Processors](#processors)
@@ -350,10 +351,10 @@ tool_result:
 5545
 ```
 
-### `js`
-execute javascript code
+### `js_node`
+execute javascript code in nodejs
 ```chat
-user: @js
+user: @js_node
 1234 + 4311
 
 tool_call: js {"inputType":"commonjs"}
@@ -361,6 +362,85 @@ tool_call: js {"inputType":"commonjs"}
 
 tool_result:
 5545
+
+```
+
+### `js_ctx`
+execute javascript code but also call tools available to llm or trigger LLM response from code 
+It is useful when you need to trigger loops and ifs or chain few tool calls together
+```chat
+user: 
+@js_ctx @sh
+1234 + 4311
+
+tool_call: sh
+ls
+tool_result:
+__pycache__
+append.schema.json
+append.tool.js
+... file list
+
+user:
+can you do the same using js_ctx tool?
+
+assistant:
+
+tool_call: js_ctx
+
+const result = await ctx.exec("sh", { text: "ls" });
+return result;
+
+tool_result:
+__pycache__
+append.schema.json
+append.tool.js
+....
+
+user:
+can you loop throught the .js files and summarize its content using llm?
+assistant:
+
+tool_call: js_ctx
+
+// Get all .js files (excluding .proc.js and .schema.json files)
+const files = await ctx.exec("sh", { text: "ls *.js | grep -v '.proc.js'" });
+const jsFiles = files.trim().split('\n').filter(f => f.endsWith('.js'));
+
+const summaries = [];
+
+// Loop through each .js file
+for (const file of jsFiles) {
+  // Read the file content
+  const content = await ctx.exec("sh", { text: `cat ${file}` });
+  
+  // Use LLM to summarize
+  const summary = await ctx.file2run({
+    system: "@mistral-tiny You are a code analyst. Provide a brief 1-2 sentence summary of what this JavaScript file does.",
+    user: "Summarize this code:\n\n@code"
+  }, {
+    code: content
+  });
+  
+  summaries.push({
+    file: file,
+    summary: summary.trim()
+  });
+}
+
+// Format and return results
+return summaries.map(s => `**${s.file}**\n${s.summary}\n`).join('\n');
+
+tool_result:
+**append.tool.js**
+This JavaScript file exports an asynchronous function that appends the given text to the end of a specified file, and returns "done" once the operation is completed.
+
+**cmd.tool.js**
+This JavaScript file exports an asynchronous function `cmd` that executes a system command (Windows-specific, using 'cmd.exe' as the shell) passed as a string, and returns the command's output or an error message containing both stderr and stdout.
+
+**grep.tool.js**
+This JavaScript module exports an asynchronous function named `grep` that reads a file (if provided) or a provided text and searches for lines matching a given regular expression. It returns the lines that match, separated by newlines. If the file is not found or the content is empty, it returns appropriate error messages.
+....
 
 ```
 
