@@ -397,7 +397,11 @@ __pycache__
 append.schema.json
 append.tool.js
 ....
+```
 
+
+Now we can loop trough all the files and summarize its content
+```
 user:
 can you loop throught the .js files and summarize its content using llm?
 assistant:
