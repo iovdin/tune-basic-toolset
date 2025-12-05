@@ -12,6 +12,6 @@
         "description": "save the role name to filename that keeps the current role"
       }
     },
-    "required": ["name", "filename"]
+    "required": ["role", "filename"]
   }
 }
