@@ -17,5 +17,6 @@
       }
     },
     "required": ["url"]
-  }
+  },
+  "$escape_output": false
 }
