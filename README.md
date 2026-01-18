@@ -207,15 +207,42 @@ TODOS:
 Find appropriate tools for a given task by searching through available tools
 ```chat
 user: @search_tools
-I need to work with a database and manage todos
+what is in my current directory?
 
-A:
+assistant:
+I'll help you check what's in your current directory.
 
-tool_call: search_tools 
-I need to work with a database and manage todos
+tool_call: search_tools
+list files and folders in current directory
+
 tool_result:
-@sqlite "sqlite" - because it helps to execute sqlite queries on databases
-@list "list" - because it helps with managing todo lists and tasks
+@sh "sh" - because it can run shell commands like `ls -la` to list files/folders on Unix-like systems
+@cmd "cmd" - because it can execute `dir` to list directory contents on Windows cmd.exe
+@powershell "powershell" - because it can run `Get-ChildItem` (alias `ls`) to list items on Windows PowerShell
+@nu "nu" - because it can run Nushell commands like `ls` for structured directory listings
+
+assistant:
+Let me try with a shell command that works on most systems:
+
+tool_call: sh
+ls -la
+
+tool_result:
+total 13584
+drwxr-xr-x   15 iovdin  staff      480 Jan 18 19:07 .
+drwxr-xr-x  195 iovdin  staff     6240 Jan 17 12:46 ..
+drwxr-xr-x   14 iovdin  staff      448 Jan 18 19:00 .git
+drwxr-xr-x    3 iovdin  staff       96 Sep  4 20:15 .github
+-rw-r--r--    1 iovdin  staff       82 Aug 12 10:44 .gitignore
+-rw-r--r--    1 iovdin  staff      316 Oct 21 21:41 .npmignore
+drwxr-xr-x   32 iovdin  staff     1024 Jan 18 18:59 chats
+drwxr-xr-x   13 iovdin  staff      416 Oct 25 09:32 node_modules
+-rw-r--r--    1 iovdin  staff     8145 Oct 25 09:32 package-lock.json
+-rw-r--r--    1 iovdin  staff      754 Jan 18 18:59 package.json
+-rw-r--r--    1 iovdin  staff    18959 Jan 18 18:59 README.md
+drwxr-xr-x   62 iovdin  staff     1984 Jan 18 19:04 src
+drwxr-xr-x   16 iovdin  staff      512 Nov  9 09:14 test
+
 ```
 
 This tool analyzes your task description and recommends the most relevant tools from the available toolset, explaining why each tool would be helpful for your specific use case.
