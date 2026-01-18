@@ -14,6 +14,7 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [cmd](#cmd) execute Windows cmd command
   - [powershell](#powershell) execute PowerShell command
   - [grep](#grep) search for patterns in text or files
+  - [search_tools](#search_tools) find appropriate tools for a task
   - [osa](#osa) manage reminders/notes/calendar (AppleScript/macOS)
   - [jina_r](#jina_r) fetch webpage content
   - [websearch](#websearch) search the web with web-enabled llms
@@ -201,6 +202,23 @@ TODOS:
 @{ myfile.js | proc grep regex=TODO }
 
 ```
+
+### `search_tools`
+Find appropriate tools for a given task by searching through available tools
+```chat
+user: @search_tools
+I need to work with a database and manage todos
+
+A:
+
+tool_call: search_tools 
+I need to work with a database and manage todos
+tool_result:
+@sqlite "sqlite" - because it helps to execute sqlite queries on databases
+@list "list" - because it helps with managing todo lists and tasks
+```
+
+This tool analyzes your task description and recommends the most relevant tools from the available toolset, explaining why each tool would be helpful for your specific use case.
 
 ### `osa`
 AppleScript tool, manage reminders, notes, calendar etc on osx
