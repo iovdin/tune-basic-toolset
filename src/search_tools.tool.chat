@@ -1,5 +1,5 @@
 system:
-@{ gpt-5.2-chat-latest }
+@{ small | init @gpt-5.2-chat-latest }
 
 Given user task
 You provide a list of tools that are best help for the user
