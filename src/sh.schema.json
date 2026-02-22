@@ -5,11 +5,11 @@
     "properties": {
       "text": {
         "type": "string",
-        "description": "The shell command to execute"
+        "description": "The shell command to execute, always prepend input with comment explaining the command so user that is not familiar with shell can understand and estimate how dangerous the command is"
       },
       "host": {
         "type": "string",
-        "description": "remote host like user@host.com to execute the shell comand on (uses ssh)"
+        "description": "remote host like user@host.com to execute the shell comand on (uses ssh), default is empty (local shell) "
       }
     },
     "required": ["text"]

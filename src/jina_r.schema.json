@@ -18,5 +18,5 @@
     },
     "required": ["url"]
   },
-  "$escape_output": false
+  "$escape_output": true
 }

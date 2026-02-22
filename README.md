@@ -17,6 +17,7 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [search_tools](#search_tools) find appropriate tools for a task
   - [osa](#osa) manage reminders/notes/calendar (AppleScript/macOS)
   - [jina_r](#jina_r) fetch webpage content
+  - [mistral_ocr](#mistral_ocr) extract text from documents and images via OCR
   - [websearch](#websearch) search the web with web-enabled llms
   - [list](#list) keep list of tasks todo (loops for LLM)
   - [sqlite](#sqlite) execute sqlite queries 
@@ -289,6 +290,40 @@ The content from the "Tune" page has been successfully retrieved and saved into 
 
 Tune is a versatile toolkit designed for developers and users to effectively interact with Large Language Models (LLMs). It allows users to chat with AI, build applications, and create AI agents in a simple manner. 
 <cut for brevity>
+```
+
+### `mistral_ocr`
+Extract text from documents and images using the [Mistral OCR API](https://mistral.ai/). Requires a `MISTRAL_KEY` set in `.env`.
+
+Supports documents: `.pdf`, `.docx`, `.pptx`, `.txt`, `.epub`, `.xml`, `.rtf`, `.odt`, `.bib`, `.fb2`, `.ipynb`, `.tex`, `.opml`, `.1`, `.man`
+
+Supports images: `.jpg`, `.jpeg`, `.png`, `.avif`, `.tiff`, `.gif`, `.heic`, `.heif`, `.bmp`, `.webp`
+
+```chat
+user: @mistral_ocr
+extract text from invoice.pdf
+
+tool_call: mistral_ocr {"filename":"invoice.pdf"}
+tool_result:
+# Invoice #1042
+
+**Date:** 2024-04-01
+**Bill To:** Acme Corp
+
+| Description        | Amount  |
+|--------------------|---------|
+| Consulting (10h)   | $1500   |
+| Hosting (1 month)  | $50     |
+| **Total**          | $1550   |
+
+user: 
+what does this screenshot say?
+
+tool_call: mistral_ocr {"filename":"screenshot.png"}
+tool_result:
+## System Alert
+
+Your disk usage has exceeded 90%. Please free up space to avoid performance issues.
 ```
 
 ### `websearch`

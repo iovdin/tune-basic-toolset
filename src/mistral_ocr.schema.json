@@ -1,0 +1,14 @@
+{
+  "description": "Perform OCR on a local files using Mistral OCR API, returns extracted text as markdown",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "filename": {
+        "type": "string",
+        "description": "Path to the file to perform OCR on"
+      }
+    },
+    "required": ["filename"]
+  },
+  "$escape_output": true
+}

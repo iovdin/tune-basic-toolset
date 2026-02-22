@@ -6,10 +6,7 @@ module.exports = async function init(node, args, ctx) {
   
   // include file
   if (content.indexOf("@") === 0) {
-    return {
-      type: "text", 
-      read: async () => this.read(content.replace(/^@{1,2}/, "")) 
-    }
+    return  ctx.resolve(content.replace(/^@{1,2}/, "")) 
   }
   
   return {
