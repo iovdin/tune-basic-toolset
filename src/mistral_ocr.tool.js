@@ -4,6 +4,7 @@ const MIME_TYPES = {
   // Documents → document_url
   '.pdf':   { kind: 'document', mime: 'application/pdf' },
   '.docx':  { kind: 'document', mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' },
+  '.xlsx':  { kind: 'document', mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
   '.pptx':  { kind: 'document', mime: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' },
   '.txt':   { kind: 'document', mime: 'text/plain' },
   '.epub':  { kind: 'document', mime: 'application/epub+zip' },
@@ -42,7 +43,11 @@ module.exports = async function mistralOcr({ filename }, ctx) {
     throw new Error(`Unsupported file extension: ${ext}`);
   }
 
-  const buf = await ctx.read(filename);
+  const node = await ctx.resolve(filename)
+  if (!node) {
+    return `${filename} not found`
+  }
+  const buf = await node.read(true);
   const base64 = buf.toString('base64');
   const dataUrl = `data:${typeInfo.mime};base64,${base64}`;
 

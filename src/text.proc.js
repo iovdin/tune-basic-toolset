@@ -5,7 +5,7 @@ module.exports = async function(node, args, ctx) {
   return {
     ...node,
     type: "text",
-    read : async () => ctx.read(node.fullname)
+    read : async () => ctx.read(node.fullname || node.name)
   }
 
 }
