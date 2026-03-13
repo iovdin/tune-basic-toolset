@@ -295,7 +295,7 @@ Tune is a versatile toolkit designed for developers and users to effectively int
 ### `mistral_ocr`
 Extract text from documents and images using the [Mistral OCR API](https://mistral.ai/). Requires a `MISTRAL_KEY` set in `.env`.
 
-Supports documents: `.pdf`, `.docx`, `.pptx`, `.txt`, `.epub`, `.xml`, `.rtf`, `.odt`, `.bib`, `.fb2`, `.ipynb`, `.tex`, `.opml`, `.1`, `.man`
+Supports documents: `.pdf`, `.docx`, `.xlsx`, `.pptx`, `.txt`, `.epub`, `.xml`, `.rtf`, `.odt`, `.bib`, `.fb2`, `.ipynb`, `.tex`, `.opml`, `.1`, `.man`
 
 Supports images: `.jpg`, `.jpeg`, `.png`, `.avif`, `.tiff`, `.gif`, `.heic`, `.heif`, `.bmp`, `.webp`
 
@@ -324,6 +324,17 @@ tool_result:
 ## System Alert
 
 Your disk usage has exceeded 90%. Please free up space to avoid performance issues.
+```
+
+You can also save the extracted text to a file using the `outfile` parameter:
+
+```chat
+user: @mistral_ocr
+extract text from report.pdf and save it to report.md
+
+tool_call: mistral_ocr {"filename":"report.pdf","outfile":"report.md"}
+tool_result:
+saved to report.md
 ```
 
 ### `websearch`

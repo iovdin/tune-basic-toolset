@@ -31,7 +31,7 @@ const MIME_TYPES = {
   '.webp':  { kind: 'image', mime: 'image/webp' },
 };
 
-module.exports = async function mistralOcr({ filename }, ctx) {
+module.exports = async function mistralOcr({ filename, outfile }, ctx) {
   const apiKey = await ctx.read("MISTRAL_KEY");
   if (!apiKey) {
     throw new Error("MISTRAL_KEY is not set");
@@ -73,7 +73,12 @@ module.exports = async function mistralOcr({ filename }, ctx) {
     throw new Error(`Mistral OCR error: ${response.status} ${response.statusText} - ${errorText}`);
   }
 
-  const result = await response.json();
+  let result = await response.json();
+  result = result.pages.map(page => page.markdown).join("\n\n")
+  if (outfile) {
+    await ctx.write(outfile, result)
+    return `saved to ${outfile}`
+  }
 
-  return result.pages.map(page => page.markdown).join("\n\n");
+  return result;
 };

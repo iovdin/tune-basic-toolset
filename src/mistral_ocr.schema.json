@@ -6,6 +6,10 @@
       "filename": {
         "type": "string",
         "description": "Path to the file to perform OCR on"
+      },
+      "outfile": {
+        "type": "string",
+        "description": "save ocr result to this filename"
       }
     },
     "required": ["filename"]
