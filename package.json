@@ -1,6 +1,6 @@
 {
   "name": "tune-basic-toolset",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Basic toolset for tune",
   "main": "src/index.js",
   "files": [

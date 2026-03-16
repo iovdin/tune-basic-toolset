@@ -41,6 +41,7 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [slice](#slice) take lines from <start> to <finish> of a file
   - [random](#random) random selection, sampling, shuffling, uniform ranges
   - [curry](#curry) change a tool by setting a parameter
+  - [limit](#limit) limit output size by approximate token count
 
 
 ## Setup
@@ -842,6 +843,31 @@ Notes:
 - sample and shuffle require a discrete set; float ranges are not supported there.
 - choices and sample output multiple lines (one item per line).
 
+
+### `limit`
+Limit text or tool output by approximate token count.
+
+Useful when including large files or command output into a prompt.
+The processor estimates tokens as roughly `content.length / 4`.
+
+Arguments:
+- `tokens` max token limit, default `10000`
+- `hit` what to do when the limit is exceeded:
+  - `hard_err` throw an error (default)
+  - `soft_err` return a short message instead of the content
+  - `cut` truncate the content and append a warning
+
+`tokens` also supports shorthand values like `2k`, `1.5k`, `3m`.
+Invalid, non-finite, or non-positive values fall back to `10000`.
+
+```chat
+system:
+@{ README.md | limit tokens=2k }
+
+@{ sh | limit tokens=1500 hit=soft_err }
+@{ sh | limit tokens=1.5k hit=cut }
+@{| proc sh tree | limit tokens=800 }
+```
 
 ### `curry`
 Modify a tool by setting parameter or name or description. 
