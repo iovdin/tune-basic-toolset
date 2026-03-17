@@ -1,0 +1,13 @@
+{
+  "description": "branch current chat (history is shared), return assistant reply as a result",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "description": "Additional instruction for the branch"
+      }
+    },
+    "required": ["text"]
+  }
+}

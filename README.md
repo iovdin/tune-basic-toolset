@@ -25,6 +25,7 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [js_node](#js_node) run javascript code in node process
   - [js_ctx](#js_ctx) run javascript code that shares context with LLM
   - [turn](#turn) handoff based agent (shared context)
+  - [branch](#branch) branch current chat and continue from shared history
   - [message](#message) talk to another chat/agent (separate context)
 - [Processors](#processors)
   - [proc](#proc) converts tool to processor
@@ -575,6 +576,29 @@ Yes.
 
 ...
 ```
+
+### `branch`
+Branch current chat and continue from the same shared history.
+
+Unlike `message`, this tool must be called from an existing chat context. It takes the current chat history, appends your new instruction as the next user message, and returns the assistant reply from that branched continuation.
+
+```chat
+system:
+@branch
+
+user:
+Continue this conversation, but explore an alternative approach.
+
+assistant:
+tool_call: branch 
+Re-answer the last request, but optimize for simplicity and low cost.
+tool_result:
+Here's a simpler and lower-cost approach: ...
+```
+
+Use `branch` when you want to:
+- try an alternative reply without losing prior context
+- save context by doing a lot of tool calls in alternative branch
 
 ### `message`
 Talk to another chat/agent via tool call. 
