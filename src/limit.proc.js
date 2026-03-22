@@ -34,6 +34,7 @@ const parseMaxTokens = (value) => {
 
 module.exports = async function limit(node, args) {
   /*
+   @{ gpt-5.4 | limit tokens=10k }
    @{ sh | limit tokens=2000 hit=hard_err|soft_err|cut }
    @{ filename | limit tokens=2k }
    @{ filename | limit tokens=1.5K }
@@ -77,5 +78,17 @@ module.exports = async function limit(node, args) {
     }
   }
 
-  throw Error(`limit processor can only handle 'text' and 'tool' nodes, got '${node.type}'`)
+  if (node.type === "llm") {
+    params.hit = "hard_err"
+    return {
+      ...node,
+      exec: async (payload, ctx) => {
+        const res = await node.exec(payload, ctx)
+        handleContent(res.body)
+        return res
+      }
+    }
+  }
+
+  throw Error(`limit processor can only handle 'text' 'tool' and 'llm' nodes, got '${node.type}'`)
 }
