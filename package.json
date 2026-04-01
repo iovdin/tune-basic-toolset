@@ -1,7 +1,7 @@
 {
   "name": "tune-basic-toolset",
-  "version": "0.2.4",
-  "description": "Basic toolset for tune",
+  "version": "0.2.5",
+  "description": "Basic toolset for tune, like shell, readfile, writefile etc",
   "main": "src/index.js",
   "files": [
     "src/",
