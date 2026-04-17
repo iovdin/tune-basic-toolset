@@ -1,0 +1,7 @@
+system:
+You're sub agent for the conversation:
+<chat-history>
+@{ __parent | expand | filter name!="branch" }
+</chat-history>
+user:
+@text

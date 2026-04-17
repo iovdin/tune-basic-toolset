@@ -25,7 +25,7 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [js_node](#js_node) run javascript code in node process
   - [js_ctx](#js_ctx) run javascript code that shares context with LLM
   - [turn](#turn) handoff based agent (shared context)
-  - [branch](#branch) branch current chat and continue from shared history
+  - [branch](#branch) branch current chat and run sub-agent
   - [message](#message) talk to another chat/agent (separate context)
 - [Processors](#processors)
   - [proc](#proc) converts tool to processor
@@ -43,6 +43,9 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [random](#random) random selection, sampling, shuffling, uniform ranges
   - [curry](#curry) change a tool by setting a parameter
   - [limit](#limit) limit output size by approximate token count
+  - [expand](#expand) extract `content`, `tools`, and/or `llm` nodes from a prompt or chat file
+  - [schema](#schema) convert a tool node into its JSON schema as text
+  - [filter](#filter) keep or drop a node based on a boolean expression over its properties
 
 
 ## Setup
@@ -654,7 +657,6 @@ Sure! Why did the tree go to the dentist?
 Because it had a root canal!
 ```
 
-
 ## Processors
 [Processors](https://iovdin.github.io/tune/template-language/processors) is a way to modify variable or insert new ones into chat.
 
@@ -869,7 +871,17 @@ Notes:
 
 
 ### `limit`
-Limit text or tool output by approximate token count.
+Limit model or text or tool output by approximate token count.
+
+
+```chat
+system:
+@{ gpt-5.4 | limit tokens=100k }
+@{ README.md | limit tokens=2k }
+@{ sh | limit tokens=1500 hit=soft_err }
+@{ sh | limit tokens=1.5k hit=cut }
+@{| proc sh tree | limit tokens=800 }
+```
 
 Useful when including large files or command output into a prompt.
 The processor estimates tokens as roughly `content.length / 4`.
@@ -878,20 +890,11 @@ Arguments:
 - `tokens` max token limit, default `10000`
 - `hit` what to do when the limit is exceeded:
   - `hard_err` throw an error (default)
-  - `soft_err` return a short message instead of the content
-  - `cut` truncate the content and append a warning
+  - `soft_err` return an text error message instead of throwing the error.
+  - `cut` truncate the content after the limit
 
 `tokens` also supports shorthand values like `2k`, `1.5k`, `3m`.
 Invalid, non-finite, or non-positive values fall back to `10000`.
-
-```chat
-system:
-@{ README.md | limit tokens=2k }
-
-@{ sh | limit tokens=1500 hit=soft_err }
-@{ sh | limit tokens=1.5k hit=cut }
-@{| proc sh tree | limit tokens=800 }
-```
 
 ### `curry`
 Modify a tool by setting parameter or name or description. 
@@ -926,5 +929,80 @@ tool_call: todo
 [] - Create sample todo list
 tool_result:
 list updated
+```
+
+### `expand`
+Parses a prompt or chat file and extracts its `content`, `tools`, and/or `llm`. 
+
+example `branch.tool.chat`:
+```chat
+system:
+You're sub agent for the conversation:
+
+<chat-history>
+
+@{ __parent | expand content tools llm | filter name!="branch" }
+
+# `__parent` - resolves to chat that calls this one as a tool
+# `| expand content tools llm` - will expand all @ and @@ inside the parent chat 
+#                                return chat history(content) 
+#                                re-use tools from parent chat
+#                                and use the same llm as parent chat
+# `| filter name!="branch"` - it will remove `branch` tool (itself) so to avoid recursive calls
+
+</chat-history>
+user:
+@text
+```
+
+example for `webapp.tool.chat`:
+
+```chat
+@gpt-5.4 @rf @wf @patch
+
+You are sub-agent 
+You help to make or update simple static webapps for 'tune ws'
+
+<tune-sdk-manual>
+@man/tune-sdk
+</tune-sdk-manual>
+
+<chat-history>
+@{ __parent | expand content }
+
+# `__parent` - resolves to caller chat
+# `expand content` expands only content of parent, skip tools and model
+
+</chat-history>
+
+<tools-schemas>
+@{ __parent | expand tools | schema }
+
+# `| expand tools ` extract tools from the chat
+# `| schema` - extract json schema of the tools, this chat will not call them, but it knows what can be called by `ctx` in generated html
+</tools-schemas>
+
+user:
+go
+```
+
+### `schema`
+Converts a tool node into its JSON schema as a text node. Must be applied to a `tool` type node.
+
+```chat
+system:
+@{ sh | schema }
+```
+
+### `filter`
+Keeps or drops a node based on a boolean expression evaluated against the node's properties (e.g. `type`, `name`).
+
+Supported operators: `==`, `!=`, `=~` (regex match), `!~` (regex no-match)
+
+```chat
+system:
+@{ __parent | expand tools | filter type == "tool" }
+@{ __parent | expand tools | filter name != "sh" }
+@{ __parent | expand tools | filter name =~ /^(sh|sqlite)$/ }
 ```
 

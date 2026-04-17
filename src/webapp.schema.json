@@ -1,0 +1,12 @@
+{
+  "description": "build/update a static html webapp for tune. It shares tools and context with this chat. i.e. it can call tools as api and llms, read man/tune-sdk for more information",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "model": {
+        "type": "string",
+        "description": "llm model to use for webapp generation/update (optional), default is gpt-5.4"
+      }
+    }
+  }
+}
