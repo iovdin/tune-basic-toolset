@@ -1,8 +1,8 @@
 const { parseScript } = require('esprima');
 const { generate } = require('escodegen');
 const vm = require('node:vm');
-module.exports = async function js({ text }, ctx) {
 
+module.exports = async function js({ text }, ctx) {
   let code = `(async () =>{\n${text}\n})()`
   const ast = parseScript(code, { range: true });
 
@@ -24,7 +24,7 @@ module.exports = async function js({ text }, ctx) {
 
   try {
     let result = vm.runInContext(code, vm.createContext({ 
-      ctx,
+      ctx: this,
       console: {
         log: (...args) => logs.push(args),
         error: (...args) => logs.push(args),
@@ -33,7 +33,6 @@ module.exports = async function js({ text }, ctx) {
       }
     }))
     result = await result
-    return result
     if (typeof(result) === "object") {
       result = JSON.stringify(result, null, "  ")
     } else {

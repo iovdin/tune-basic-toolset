@@ -10,7 +10,7 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [wf](#wf) write file
   - [patch](#patch) patch file  
   - [append](#append) append to file
-  - [sh](#sh) execute shell command locally and remotely
+  - [sh](#sh) execute shell command
   - [cmd](#cmd) execute Windows cmd command
   - [powershell](#powershell) execute PowerShell command
   - [grep](#grep) search for patterns in text or files
@@ -31,7 +31,7 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [proc](#proc) converts tool to processor
   - [init](#init) set initial value
   - [json_format](#json_format) make LLM respond with JSON
-  - [log](#log) save LLM payload
+  - [log](#log) save LLM payload or raw fetch responses
   - [mock](#mock) set variables inline
   - [linenum](#linenum) prepend line numbers
   - [text](#text) convert any variable to text variable
@@ -46,6 +46,7 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [expand](#expand) extract `content`, `tools`, and/or `llm` nodes from a prompt or chat file
   - [schema](#schema) convert a tool node into its JSON schema as text
   - [filter](#filter) keep or drop a node based on a boolean expression over its properties
+  - [usage](#usage) track and display token usage and cost
 
 
 ## Setup
@@ -98,6 +99,7 @@ tool_result:
 @README.md
 ```
 It accepts an optional `linenum` parameter that prepends line numbers to the file (useful for patching).
+It also accepts an `inline` parameter that, when set, returns the resolved node's content directly without wrapping it in a file reference (useful when you want the raw content included inline in the chat).
 
 ### `wf`
 Write to a file
@@ -495,6 +497,19 @@ append.tool.js
 ....
 ```
 
+Note that `ctx.exec` always returns a string. If you expect JSON, use `JSON.parse()`:
+
+```chat
+tool_call: js_ctx
+
+const result = await ctx.exec("sqlite", { filename: "db.sqlite", format: "json", text: "SELECT * FROM users LIMIT 1" });
+const user = JSON.parse(result);
+return user[0].name;
+
+tool_result:
+Alice
+```
+
 
 Now we can loop trough all the files and summarize its content
 ```
@@ -721,12 +736,17 @@ system:
 ```
 
 ### `log` 
-Save LLM payload to a json or chat file, used for debugging
+Save LLM payload or raw fetch responses to a file, used for debugging.
+Supports `.json`, `.chat`, and `.fetch` file extensions.
 ```chat
 system: 
 @{ gpt-4o | log path/to/log.json }
 @{ gpt-4o | log path/to/log.chat }
+@{ gpt-4o | log path/to/log.fetch }
 ```
+- `.json` — saves the full LLM payload as JSON
+- `.chat` — saves the chat messages in `.chat` format
+- `.fetch` — saves the raw fetch response body
 
 ### `mock` 
 Set variables inline in chat. 
@@ -1005,4 +1025,29 @@ system:
 @{ __parent | expand tools | filter name != "sh" }
 @{ __parent | expand tools | filter name =~ /^(sh|sqlite)$/ }
 ```
+
+### `usage`
+Track and display token usage and cost.
+
+When applied to an LLM node, this processor:
+- Strips previous usage markers from chat history before sending to the LLM
+- Appends token usage and cost information to the assistant's response after generation
+
+```chat
+system: 
+@{ gpt-4o | usage }
+user: 
+Hello
+assistant: 
+Hi there!
+
+---
+↑500/100 ↓50 0.05¢
+---
+```
+
+The usage line shows:
+- `↑` prompt tokens (input) / cached tokens
+- `↓` completion tokens (output)
+- Cost in cents (if available)
 

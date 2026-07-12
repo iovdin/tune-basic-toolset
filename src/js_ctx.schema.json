@@ -5,7 +5,7 @@
     "properties": {
       "text": {
         "type": "string",
-        "description": "js code to execute. You can use 'ctx' inside code to call tools available, e.g. await ctx.exec(\"tool_name\", { param: value }),  it is also possible to call LLM from code:   await ctx.file2run({ system: \"You are helpful assistant\" user: \"user request: @data \"  }, { data: \"value of template variable\") to proper escape user input file2run template engine instead of javascripts ${}"
+        "description": "js code to execute. You can use 'ctx' inside code to call tools available, e.g. await ctx.exec(\"tool_name\", { param: value }),  it is also possible to call LLM from code:   await ctx.file2run({ system: \"You are helpful assistant\" user: \"user request: @data \"  }, { data: \"value of template variable\") to proper escape user input file2run template engine instead of javascripts ${}. Remember that tool result of await ctx.exec(\"tool\") is always string, if you expcect json, do json parse "
       }
     },
     "required": ["text"]

@@ -1,4 +1,5 @@
 system:
+@deepseek/deepseek-v4-flash:nitro
 You're sub agent for the conversation:
 <chat-history>
 @{ __parent | expand | filter name!="branch" }
