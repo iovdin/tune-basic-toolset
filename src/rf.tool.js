@@ -17,7 +17,7 @@ module.exports = async function readFile({ filename, linenum, autotext, inline }
   }
   const relFile = relative(process.cwd(), filename) + trailDir;
   const pathArr = [ relFile ];
-  if (resolved.type !== 'text' && ((typeof autotext === 'undefined') || autotext) && resolved.read) {
+  if (resolved.type !== 'text' && resolved.type !== "image" && ((typeof autotext === 'undefined') || autotext) && resolved.read) {
     pathArr.push('text');
   }
   if (linenum) {

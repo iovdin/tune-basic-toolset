@@ -47,6 +47,7 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [schema](#schema) convert a tool node into its JSON schema as text
   - [filter](#filter) keep or drop a node based on a boolean expression over its properties
   - [usage](#usage) track and display token usage and cost
+  - [fn](#fn) quote a variable inside
 
 
 ## Setup
@@ -1051,3 +1052,30 @@ The usage line shows:
 - `↓` completion tokens (output)
 - Cost in cents (if available)
 
+
+### `fn`
+Insert filename along with its content.
+
+`@path/filename` in cursor and other clients it inserts contents of the filename + leave filename in place. But tune only inserts content leaving mention empty.
+
+`fn` solves this:
+
+```chat
+user: can you look into the @filename 
+
+# becomes
+
+user: can you look into <contents of the filename>
+
+# but
+
+user: can you look into the @filename|fn
+
+#becomes
+
+user: can you look into the @filename
+
+---- contents of filename ----
+<contents of the filename>
+---- end contents of filename ----
+```

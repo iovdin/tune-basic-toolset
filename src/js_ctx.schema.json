@@ -1,11 +1,11 @@
 {
-  "description": "run js code",
+  "description": "run js code in a sandbox with `ctx` variable exposed. use to automate repetitive tasks in this conversation.",
   "parameters": {
     "type": "object",
     "properties": {
       "text": {
         "type": "string",
-        "description": "js code to execute. You can use 'ctx' inside code to call tools available, e.g. await ctx.exec(\"tool_name\", { param: value }),  it is also possible to call LLM from code:   await ctx.file2run({ system: \"You are helpful assistant\" user: \"user request: @data \"  }, { data: \"value of template variable\") to proper escape user input file2run template engine instead of javascripts ${}. Remember that tool result of await ctx.exec(\"tool\") is always string, if you expcect json, do json parse "
+        "description": "js code to execute. You can not require or import anything, you can only use ctx's methods which are:\n\n- await ctx.read(\"filename\", isBinary) - read contents of a file\n- await ctx.write(\"filename\", content) - write content to a file\n- const toolResult = await ctx.exec(\"toolname\", { param: 1, param2: 2}) - execute any tool that is available in the context of the conversation. Note that toolResult is always string, if you expect JSON, do JSON.parse(toolResult)\n- const exist = await ctx.resolve(\"filename\") - find a file, use it as a check for file existence (!!exists)\n- await ctx.file2run({ system: \"You are helpful assistant\", user: \"user request: @data\"}, { data: \"value of template variable\" }) - this will execute an LLM request and return the assistant's answer"
       }
     },
     "required": ["text"]
