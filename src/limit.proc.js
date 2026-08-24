@@ -57,6 +57,9 @@ module.exports = async function limit(node, args) {
       case "cut":
         //TODO: binary
         return content.slice(0, maxTokens * 4) + `\n warning: the rest of the content is cut because it hit max token limit ${maxTokens} `
+      case "tail":
+        //TODO: binary
+        return `warning: the beginning of the content is cut because it hit max token limit ${maxTokens} \n` + content.slice(-maxTokens * 4)
       case "soft_err":
         return `Content is too big to be shown, context limit ${maxTokens} tokens`
       default: // hard_err

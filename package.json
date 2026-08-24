@@ -1,6 +1,6 @@
 {
   "name": "tune-basic-toolset",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "description": "Basic toolset for tune, like shell, readfile, writefile etc",
   "main": "src/index.js",
   "files": [
