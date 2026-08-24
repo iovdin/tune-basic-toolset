@@ -1,7 +1,8 @@
 // @{| random choice a b c d } choose 1 from the list
 // @{| random a b c d } - default is choice
 // @{| random "choice with whitespaces 1" "another choice"  } - default is choice, and choices are in "
-// @{| random choice @file/name } choose 1 line from the filename
+// @{ file/name | random choice } choose 1 line from the input node
+// @{| random choice @a @b @c } resolve and return one of the named nodes
 // @{| random choice 2..30 } choose number from the range
 
 // @{| random choices 3 a b c d } choice with replacement
@@ -158,14 +159,19 @@ module.exports = async function (node, args, ctx) {
     tokens = tokens.slice(1)
   }
 
-  // Expand tokens: @file, ranges, plain values
-  // We allow mixing files and discrete values; range tokens will be handled below.
-  // Collect items and detect single-range when appropriate.
+  // @name arguments are node references, not files whose lines should be
+  // expanded. A processor input node is used for the file/list form:
+  //   @{ file/name | random choice }
 
-  // Helper to read lines from file token
-  const readFileToken = async (tok) => {
-    const content = await ctx.read(tok.slice(1))
-    return String(content).split(/\r?\n/).map(s => s.trim()).filter(Boolean)
+  // For a list of node references, resolve and return the selected node. This
+  // is deliberately done before constructing the text node: callers can keep
+  // the selected node's type (image, tool, llm, etc.) rather than getting a
+  // string containing its contents.
+  if (method === 'choice' && tokens.length > 0 && tokens.every(tok => tok.startsWith('@'))) {
+    const selected = tokens[Math.floor(Math.random() * tokens.length)]
+    const resolved = await ctx.resolve(selected.slice(1))
+    if (!resolved) throw new Error(`random: could not resolve ${selected}`)
+    return resolved
   }
 
   // Determine if we have a single token that is a range
@@ -177,24 +183,17 @@ module.exports = async function (node, args, ctx) {
   let input
   if (singleRange) {
     input = singleRange.isInt ? { type: 'range', range: singleRange } : { type: 'floatRange', range: singleRange }
-  } else if (tokens.length === 1 && tokens[0].startsWith('@')) {
-    const lines = await readFileToken(tokens[0])
-    input = { type: 'list', items: lines }
   } else {
-    // Build items list, expanding @file and integer ranges; float ranges in a list are not supported
+    // Build items from literal values and integer ranges. @name tokens are
+    // handled above as node references and are therefore not file shortcuts.
     const items = []
     for (const tok of tokens) {
-      if (tok.startsWith('@')) {
-        const lines = await readFileToken(tok)
-        items.push(...lines)
+      const r = parseRange(tok)
+      if (r) {
+        if (!r.isInt) throw new Error('random: float ranges cannot be mixed with discrete values')
+        for (let i = r.min; i <= r.max; i++) items.push(String(i))
       } else {
-        const r = parseRange(tok)
-        if (r) {
-          if (!r.isInt) throw new Error('random: float ranges cannot be mixed with discrete values')
-          for (let i = r.min; i <= r.max; i++) items.push(String(i))
-        } else {
-          items.push(tok)
-        }
+        items.push(tok)
       }
     }
     input = { type: 'list', items }
@@ -203,16 +202,29 @@ module.exports = async function (node, args, ctx) {
   return {
     type: 'text',
     read: async () => {
-      // If no params provided
-      if (!input || (input.type === 'list' && input.items.length === 0)) {
+      // With the new file syntax the input node supplies the values. Read it
+      // lazily so processors retain the normal node lifecycle.
+      let currentInput = input
+      if (tokens.length === 0 && node) {
+        if (node.type !== 'text' || typeof node.read !== 'function') {
+          throw new Error('random: input node must be readable text')
+        }
+        const content = await node.read()
+        currentInput = {
+          type: 'list',
+          items: String(content).split(/\r?\n/).map(s => s.trim()).filter(Boolean)
+        }
+      }
+
+      if (!currentInput || (currentInput.type === 'list' && currentInput.items.length === 0)) {
         throw new Error('random: no values provided')
       }
       const fn = methods[method]
       if (!fn) throw new Error(`random: unsupported method ${method}`)
       try {
         const result = (method === 'choices' || method === 'sample')
-          ? fn(input, { count })
-          : fn(input)
+          ? fn(currentInput, { count })
+          : fn(currentInput)
         return String(result)
       } catch (e) {
         return `Error: ${e.message}`

@@ -12,6 +12,9 @@ module.exports = async function sh({ text, host }) {
       cmd = "ssh"
       args = [host, text]
     }
+    if (!text) {
+      return `'text' parameter containing shell command is required`;
+    }
     // Increase maxBuffer to reduce ERR_CHILD_PROCESS_STDIO_MAXBUFFER risk on large outputs
     result = spawnSync(cmd, args, { encoding: "utf8", maxBuffer: 10 * 1024 * 1024, shell: true });
     result = (result.stdout || "") + (result.stderr || "")

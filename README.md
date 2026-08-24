@@ -901,6 +901,7 @@ system:
 @{ README.md | limit tokens=2k }
 @{ sh | limit tokens=1500 hit=soft_err }
 @{ sh | limit tokens=1.5k hit=cut }
+@{ sh | limit tokens=1500 hit=tail }
 @{| proc sh tree | limit tokens=800 }
 ```
 
@@ -913,6 +914,7 @@ Arguments:
   - `hard_err` throw an error (default)
   - `soft_err` return an text error message instead of throwing the error.
   - `cut` truncate the content after the limit
+  - `tail` truncate the content before the limit, keeping the last N tokens
 
 `tokens` also supports shorthand values like `2k`, `1.5k`, `3m`.
 Invalid, non-finite, or non-positive values fall back to `10000`.
