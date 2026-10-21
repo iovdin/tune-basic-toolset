@@ -19,6 +19,7 @@ Basic toolset for [Tune](https://github.com/iovdin/tune).
   - [jina_r](#jina_r) fetch webpage content
   - [mistral_ocr](#mistral_ocr) extract text from documents and images via OCR
   - [websearch](#websearch) search the web with web-enabled llms
+  - [youtube_transcribe](#youtube_transcribe) transcribe YouTube videos
   - [list](#list) keep list of tasks todo (loops for LLM)
   - [sqlite](#sqlite) execute sqlite queries 
   - [py](#py) run python code
@@ -364,6 +365,22 @@ The latest AI news in October 2025 highlights significant investments, new proje
 ```
 
 The websearch tool provides up-to-date information by querying the web through AI-powered search models. You can specify different Perplexity models like `perplexity/sonar-pro` for more advanced searches.
+
+### `youtube_transcribe`
+Transcribe YouTube videos using a web-enabled LLM via the [OpenRouter API](https://openrouter.ai/). Requires an `OPENROUTER_KEY` set in `.env`.
+
+Takes a `videoId` parameter (the YouTube video ID, e.g. `dQw4w9WgXcQ`) and returns the transcript in the video's original language. 
+
+```chat
+user: @youtube_transcribe
+transcribe https://www.youtube.com/watch?v=dQw4w9WgXcQ
+
+tool_call: youtube_transcribe {"videoId":"dQw4w9WgXcQ"}
+tool_result:
+Never gonna give you up, never gonna let you down
+Never gonna run around and desert you
+...
+```
 
 ### `list`
 Keep list of tasks to do

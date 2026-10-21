@@ -1,0 +1,13 @@
+{
+  "description": "get youtube video transcription",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "videoId": {
+        "type": "string",
+        "description": "Youtube video id like in https://www.youtube.com/watch?v=<videoId>"
+      }
+    },
+    "required": ["videoId"]
+  }
+}
