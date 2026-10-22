@@ -1,5 +1,5 @@
 {
-  "description": "Does a websearch using llm",
+  "description": "Search the web using OpenRouter's web search and web fetch tools. Returns an answer with URL citations when available. Optionally choose a search engine; defaults to parallel.",
   "parameters": {
     "type": "object",
     "properties": {
@@ -7,16 +7,10 @@
         "type": "string",
         "description": "web search query"
       },
-      "model": {
+      "searchEngine": {
         "type": "string",
-        "enum": [
-          "perplexity/sonar", 
-          "perplexity/sonar-pro", 
-          "gpt-5-search-api",
-          "gpt-4o-search-preview", 
-          "gpt-4o-mini-search-preview"
-        ],
-        "description": "model to do websearch, default is perplexity/sonar"
+        "enum": [ "parallel", "google", "perplexity", "openai", "exa"],
+        "description": "Search engine to use. Defaults to parallel."
       }
     },
     "required": ["text"]

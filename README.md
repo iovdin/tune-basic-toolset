@@ -347,24 +347,31 @@ saved to report.md
 ```
 
 ### `websearch`
-Search the web with web enabled llms
-Supports search with  `perplexity/sonar`, `perplexity/sonar-pro`, `gpt-4o-search-preview`, `gpt-4o-mini-search-preview` models via the `model` parameter (defaults to `perplexity/sonar`).
+Search the web using OpenRouter's web search and web fetch tools. Requires `OPENROUTER_KEY` to be set in the environment or available through Tune's context.
+
+The optional `searchEngine` parameter selects a search engine: `parallel` (default), `google`, `perplexity`, `openai`, or `exa`. Results include the assistant's response and, when available, URL citations with page titles and excerpts. Usage information is included by default.
 
 ```chat
 user: @websearch
-latest ai news
+latest AI news
 
 assistant:
 
-tool_call: websearch {"model":"perplexity/sonar"}
+tool_call: websearch {"searchEngine":"parallel"}
 latest AI news
 tool_result:
-The latest AI news in October 2025 highlights significant investments, new projects, policy developments, and advances across various sectors:
+Recent AI news includes ...
 
-- Major companies including Microsoft, Google, Nvidia, OpenAI, Salesforce, and CoreWeave have pledged over £31 billion in capital expenditure focused on AI data centers and infrastructure upgrades[1].
+##Annotations
+### Example article title
+https://example.com/article
+A relevant excerpt from the page ...
+
+---
+↑... ↓... [ ...¢]
 ```
 
-The websearch tool provides up-to-date information by querying the web through AI-powered search models. You can specify different Perplexity models like `perplexity/sonar-pro` for more advanced searches.
+Omit `searchEngine` to use the default, or choose one of the supported engines. The tool also accepts `showAnnotations` and `showUsage` options to hide citations or usage details, respectively.
 
 ### `youtube_transcribe`
 Transcribe YouTube videos using a web-enabled LLM via the [OpenRouter API](https://openrouter.ai/). Requires an `OPENROUTER_KEY` set in `.env`.
