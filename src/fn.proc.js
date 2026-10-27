@@ -5,13 +5,13 @@ module.exports = async function fn(node) {
   const nameNode = {
     ...node,
     type: "text",
-    read: async () => `@${node.ref}`
+    read: async () => `@${node.ref || node.name}`
   }
   let mainNode = node;
   if (node.type === "text") { 
     mainNode ={
       ...node,
-      read: async () => `\n--------BEGIN CONTENT ${node.ref}---------\n${await node.read()}\n--------END CONTENT ${node.name} ---------------\n`
+      read: async () => `\n--------BEGIN CONTENT ${node.ref || node.name}---------\n${await node.read()}\n--------END CONTENT ${node.name} ---------------\n`
     }
   }
   return [nameNode, mainNode]

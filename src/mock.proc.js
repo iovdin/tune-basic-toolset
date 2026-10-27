@@ -1,36 +1,22 @@
-module.exports = async function mock(node, args, ctx) {
-  //TODO it is not resolved into sub prompts
-  const re = /(?<name>\w+)\s*=/
-  let lastName;
-  let m;
-  let text = args;
-  const vars = {};
-  while ((m = re.exec(text)) !== null) {
-    const { name } = m.groups
+const { parseArgs } = require('./utils.js')
 
-    if (lastName) {
-      vars[lastName] = text.slice(0, m.index).trim()
-    }
-    text = text.slice(m.index + m[0].length)
-    lastName = name
+module.exports = async function mock(node, args, ctx) {
+  const vars = parseArgs(args)
+  if (node && node.type === "ctx")  {
+    ctx = node;
   }
-  if (lastName) {
-    vars[lastName] = text.trim()
-  }
-  ctx.use((name, ctx, args)=> {
-    if (!vars.hasOwnProperty(name)) {
-      return 
+  
+  return {
+    ...ctx,
+    resolve: async(name, args) => {
+      if (vars[name]) {
+        return {
+          type: "text",
+          name,
+          read: async () => vars[name]
+        }
+      }
+      return ctx.resolve(name, args)
     }
-    return {
-      ...node,
-      type: "text",
-      name,
-      read: async () => vars[name]
-    }
-  })
-  return { 
-    ...node,
-    type: "text", 
-    read: async() => ""
   }
 }
